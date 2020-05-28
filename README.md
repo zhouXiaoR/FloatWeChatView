@@ -114,14 +114,6 @@ func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> B
 - 6. 当用户返回到其它界面，只要保证能找到最顶部导航，就可以再次打开悬浮窗控制器。这里主要是自定义转场动画push/pop。
 - 7. 当用户手指手动悬浮窗取消悬浮时，将单例中保存所有的数据清空，保证再次可以正常使用。
 
-### 缺陷
-微信此功能，手指侧滑至大于0.5松开，也会执行pop的转场动画，但我一直没有找到合适的有效的解决方案，如有解决或者知晓方案的可以一起交流一下。
-
-### 个人理解 
-看到技术论坛有人仿写，于是自己也好奇尝试着用swift做了一下，主题功能不难，只是有点繁琐。
-
-***swift最近一直有在看，源码有点乱，不要介意***
-
 ### 源码
 [Git源码](https://github.com/zhouXiaoR/FloatWeChatView)
 
