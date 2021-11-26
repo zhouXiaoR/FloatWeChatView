@@ -10,15 +10,15 @@ import UIKit
 
 class ViewController: UIViewController {
     lazy var tableView = UITableView(frame: view.bounds, style: UITableViewStyle.plain)
-    let newsArray = ["科技","生活趣事","娱乐","音乐"]
+    let newsArray = ["Technology", "Interesting life", "Entertainment", "Music"]
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "微信好友"
+        title = "WeChat friends"
         view.backgroundColor = UIColor.red
-        
+
         setUp()
     }
-    
+
    fileprivate func setUp() {
         tableView.rowHeight = 60.0
         view.addSubview(tableView)
@@ -27,7 +27,7 @@ class ViewController: UIViewController {
     }
 }
 
-extension ViewController : UITableViewDelegate,UITableViewDataSource{
+extension ViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let identifier = "identifier"
         var cell = tableView.dequeueReusableCell(withIdentifier: identifier)
@@ -37,16 +37,15 @@ extension ViewController : UITableViewDelegate,UITableViewDataSource{
         cell?.textLabel?.text = newsArray[indexPath.row]
         return cell!
     }
-    
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return newsArray.count
     }
-    
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
        tableView.deselectRow(at: indexPath, animated: true)
         let singleVC = SingleKindListController()
         singleVC.title = newsArray[indexPath.row]
-        navigationController?.pushViewController(singleVC , animated: true)
+        navigationController?.pushViewController(singleVC, animated: true)
     }
 }
-

@@ -9,64 +9,66 @@
 import UIKit
 
 enum BottomFloatViewType {
-    case black //黑色，默认
-    case red // 取消即红色
+    /// Black, default
+    case black
+    /// Cancel is red
+    case red
 }
 
 class BottomFloatView: UIView {
-    var type : BottomFloatViewType = BottomFloatViewType.black{
-        didSet{
-            if type == BottomFloatViewType.red{
+    var type: BottomFloatViewType = BottomFloatViewType.black {
+        didSet {
+            if type == BottomFloatViewType.red {
                 backgroundColor = UIColor.red
                 setNeedsDisplay()
             }
         }
     }
-    var insideBottomSeleted : Bool = false {
-        didSet{
+    var insideBottomSelected: Bool = false {
+        didSet {
             if type == BottomFloatViewType.red {
-                tipsLab.text =  insideBottomSeleted ? "取消弹窗" : "不取消了"
+                tipsLab.text =  insideBottomSelected ? "Cancel popup" : "No cancellation"
             }
-            
+
             setNeedsDisplay()
         }
     }
     fileprivate lazy var tipsLab = UILabel()
     fileprivate lazy var maskLayer = CAShapeLayer()
-    
+
    override init(frame: CGRect) {
         super.init(frame: frame)
         setUp()
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     func setUp() {
         backgroundColor = UIColor(white: 0.0, alpha: 0.65)
         layer.mask = maskLayer
-        
+
         tipsLab.font = UIFont.systemFont(ofSize: 15)
         tipsLab.textColor = UIColor.white
         tipsLab.textAlignment = NSTextAlignment.right
         addSubview(tipsLab)
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
-        
+
         tipsLab.frame = bounds
     }
-    
+
     override func draw(_ rect: CGRect) {
         super.draw(rect)
-        let scale : CGFloat = insideBottomSeleted ? 1.0 : 0.8
-        let bezierPath = UIBezierPath(arcCenter: CGPoint(x: bounds.width, y: bounds.height), radius: bounds.width * scale, startAngle:CGFloat(Double.pi), endAngle: CGFloat(1.5 * Double.pi), clockwise: true)
+        let scale: CGFloat = insideBottomSelected ? 1.0 : 0.8
+        let bezierPath = UIBezierPath(arcCenter: CGPoint(x: bounds.width, y: bounds.height), radius: bounds.width * scale, startAngle: CGFloat(Double.pi), endAngle: CGFloat(1.5 * Double.pi), clockwise: true)
         bezierPath.addLine(to: CGPoint(x: bounds.width, y: bounds.height))
         bezierPath.close()
         maskLayer.path = bezierPath.cgPath
-        
+
         if type == BottomFloatViewType.red {
            let circleB1 = UIBezierPath(arcCenter: CGPoint(x: bounds.width * 0.7, y: bounds.height * 0.7), radius: 10, startAngle: 0, endAngle: CGFloat(Double.pi * 2.0), clockwise: true)
            circleB1.lineWidth = 3.0

@@ -12,19 +12,19 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-    
+
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-      
+
         self.window = UIWindow(frame: UIScreen.main.bounds)
-        let nav = UINavigationController(rootViewController: ViewController())
-        self.window?.rootViewController = nav
+        let navigation = UINavigationController(rootViewController: ViewController())
+        self.window?.rootViewController = navigation
         self.window?.makeKeyAndVisible()
-        let vcname = "\(NewDetailController.self)"
-        
-        FloatViewManager.manager.addFloatVcsClass(vcs: [vcname])
-        
+
+        let viewControllerName = "\(NewDetailController.self)"
+
+        FloatViewManager.manager.addFloatClass(in: [viewControllerName])
+
         return true
     }
 
 }
-

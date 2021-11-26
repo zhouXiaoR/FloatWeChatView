@@ -9,15 +9,15 @@
 import UIKit
 
 class NewDetailController: UIViewController {
+    var themeColor: UIColor?
 
-    var themeColor:UIColor?
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         view.backgroundColor = themeColor ?? UIColor.white
-        
-        let sw = UISwitch()
-        sw.center = view.center
-        view.addSubview(sw)
+
+        let switchView = UISwitch()
+        switchView.center = view.center
+        view.addSubview(switchView)
     }
 }

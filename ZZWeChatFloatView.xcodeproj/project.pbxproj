@@ -15,7 +15,7 @@
 		69C314B520CFC9F300213861 /* NewDetailController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69C314B420CFC9F300213861 /* NewDetailController.swift */; };
 		69C314B720CFCAED00213861 /* FloatViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69C314B620CFCAED00213861 /* FloatViewManager.swift */; };
 		69C314B920CFCCEB00213861 /* CurrentTopController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69C314B820CFCCEB00213861 /* CurrentTopController.swift */; };
-		69C314BD20CFD28D00213861 /* ConstDefine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69C314BC20CFD28D00213861 /* ConstDefine.swift */; };
+		69C314BD20CFD28D00213861 /* FloatChat+DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69C314BC20CFD28D00213861 /* FloatChat+DesignSystem.swift */; };
 		69C314C020CFE05800213861 /* TransitionPush.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69C314BF20CFE05800213861 /* TransitionPush.swift */; };
 		69C314C220CFE06D00213861 /* TransitionPop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69C314C120CFE06D00213861 /* TransitionPop.swift */; };
 		69C314C720D116CA00213861 /* BottomFloatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69C314C620D116CA00213861 /* BottomFloatView.swift */; };
@@ -33,7 +33,7 @@
 		69C314B420CFC9F300213861 /* NewDetailController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewDetailController.swift; sourceTree = "<group>"; };
 		69C314B620CFCAED00213861 /* FloatViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatViewManager.swift; sourceTree = "<group>"; };
 		69C314B820CFCCEB00213861 /* CurrentTopController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentTopController.swift; sourceTree = "<group>"; };
-		69C314BC20CFD28D00213861 /* ConstDefine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConstDefine.swift; sourceTree = "<group>"; };
+		69C314BC20CFD28D00213861 /* FloatChat+DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FloatChat+DesignSystem.swift"; sourceTree = "<group>"; };
 		69C314BF20CFE05800213861 /* TransitionPush.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitionPush.swift; sourceTree = "<group>"; };
 		69C314C120CFE06D00213861 /* TransitionPop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitionPop.swift; sourceTree = "<group>"; };
 		69C314C620D116CA00213861 /* BottomFloatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomFloatView.swift; sourceTree = "<group>"; };
@@ -70,7 +70,7 @@
 		69C3149F20CFC27700213861 /* ZZWeChatFloatView */ = {
 			isa = PBXGroup;
 			children = (
-				69C314BC20CFD28D00213861 /* ConstDefine.swift */,
+				69C314BC20CFD28D00213861 /* FloatChat+DesignSystem.swift */,
 				69C314B620CFCAED00213861 /* FloatViewManager.swift */,
 				69C314C520D0EEC100213861 /* Extension */,
 				69C314C420D0EC0000213861 /* BottomView */,
@@ -199,7 +199,7 @@
 				69C314C920D22F7900213861 /* FloatBallView.swift in Sources */,
 				69C314B320CFC6D100213861 /* SingleKindListController.swift in Sources */,
 				69C314A120CFC27700213861 /* AppDelegate.swift in Sources */,
-				69C314BD20CFD28D00213861 /* ConstDefine.swift in Sources */,
+				69C314BD20CFD28D00213861 /* FloatChat+DesignSystem.swift in Sources */,
 				69C314C220CFE06D00213861 /* TransitionPop.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

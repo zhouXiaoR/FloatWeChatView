@@ -8,231 +8,236 @@
 
 import UIKit
 
-class FloatViewManager : NSObject {
-     static let manager = FloatViewManager()
-    
-     fileprivate var floatVcClass:[String] = [String]()
-     fileprivate var displayLink:CADisplayLink?
-     fileprivate var edgeGesture:UIScreenEdgePanGestureRecognizer?
-     fileprivate  lazy var bFloatView = BottomFloatView()
-     lazy var ballView = FloatBallView()
-     lazy var ballRedCancelView = BottomFloatView()
-     fileprivate var currentFloatVC:UIViewController?
-     fileprivate var tempCurrentFloatVC:UIViewController?
-    
+final class FloatViewManager: NSObject {
+
+    static let manager = FloatViewManager()
+
+    fileprivate var floatVcClass: [String] = [String]()
+    fileprivate var displayLink: CADisplayLink?
+    fileprivate var edgeGesture: UIScreenEdgePanGestureRecognizer?
+    fileprivate lazy var bFloatView = BottomFloatView()
+
+    lazy var ballView = FloatBallView()
+    lazy var ballRedCancelView = BottomFloatView()
+
+    fileprivate var currentFloatViewController: UIViewController?
+    fileprivate var tempCurrentFloatVC: UIViewController?
+
     override init() {
         super.init()
-        currentNavtigationController()?.interactivePopGestureRecognizer?.delegate = self
-        currentNavtigationController()?.delegate = self
-        setUp()
+        currentNavigationController()?.interactivePopGestureRecognizer?.delegate = self
+        currentNavigationController()?.delegate = self
+
+        setup()
         ballMoveEvents()
     }
-    
-    func setUp() {
-        bFloatView.frame = CGRect(x:screenWidth, y: screenHeight, width: kBottomViewFloatWidth, height: kBottomViewFloatHeight)
-        kWindow?.addSubview(bFloatView)
-        
-        ballRedCancelView.frame = CGRect(x:screenWidth, y: screenHeight, width: kBottomViewFloatWidth, height: kBottomViewFloatHeight)
+
+    func setup() {
+        bFloatView.frame = .init(x: DSFloatChat.screenWidth, y: DSFloatChat.screenHeight, width: DSFloatChat.kBottomViewFloatWidth, height: DSFloatChat.kBottomViewFloatHeight)
+        DSFloatChat.kWindow?.addSubview(bFloatView)
+
+        ballRedCancelView.frame = .init(x: DSFloatChat.screenWidth, y: DSFloatChat.screenHeight, width: DSFloatChat.kBottomViewFloatWidth, height: DSFloatChat.kBottomViewFloatHeight)
         ballRedCancelView.type = BottomFloatViewType.red
-        kWindow?.addSubview(ballRedCancelView)
-        
-        ballView.frame = kBallRect
-        ballView.moveDelegate = self
+        DSFloatChat.kWindow?.addSubview(ballRedCancelView)
+
+        ballView.frame = DSFloatChat.kBallRect
+        ballView.delegate = self
     }
-    
+
     func ballMoveEvents() {
-        // 循环引用
+        // Circular reference
         ballView.ballDidSelect = {
-            guard let currentFloatVC = self.currentFloatVC else{
+            guard let currentFloatVC = self.currentFloatViewController else {
                 return
             }
-            
-            //防止恶意点击
+
+            // Prevent malicious clicks
             UIApplication.shared.beginIgnoringInteractionEvents()
-            self.currentNavtigationController()?.pushViewController(currentFloatVC, animated: true)
+            self.currentNavigationController()?.pushViewController(currentFloatVC, animated: true)
             UIApplication.shared.endIgnoringInteractionEvents()
         }
     }
 }
 
-extension FloatViewManager : UINavigationControllerDelegate {
-   
+extension FloatViewManager: UINavigationControllerDelegate {
     func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: UINavigationControllerOperation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        guard let curentVC = currentFloatVC else {
+        guard let currentViewController = currentFloatViewController else {
             return nil
         }
-        
-        // 只针对效果VC做动画，其它VC忽略
+
+        // Animate only for effect VCs, ignore other VCs
         if operation == UINavigationControllerOperation.push {
-            if  toVC != curentVC{
+            if toVC != currentViewController {
                 return nil
             }
             return TransitionPush()
-        } else if operation == UINavigationControllerOperation.pop{
-            if fromVC != curentVC{
+        } else if operation == UINavigationControllerOperation.pop {
+            if fromVC != currentViewController {
                 return nil
             }
             return TransitionPop()
-        } else{
+        } else {
             return nil
         }
     }
 }
 
-
-
-extension FloatViewManager : UIGestureRecognizerDelegate {
+extension FloatViewManager: UIGestureRecognizerDelegate {
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        guard  let vcs = currentNavtigationController()?.viewControllers else{
+        guard  let viewControllers = currentNavigationController()?.viewControllers else {
             return false
         }
-        
-        guard vcs.count > 1 else {
+
+        guard viewControllers.count > 1 else {
             return false
         }
-        
-        if  let currentVisiableVC = currentViewController() {
-             let currentVCClassName = "\(currentVisiableVC.self)"
-             if currentVCClassName.contains(floatVcClass.first!){
+
+        if  let currentVisibleViewController = currentViewController() {
+            let currentVCClassName = "\(currentVisibleViewController.self)"
+            if currentVCClassName.contains(floatVcClass.first!) {
                 startDisplayLink()
                 edgeGesture = (gestureRecognizer as? UIScreenEdgePanGestureRecognizer) ?? nil
-                tempCurrentFloatVC = currentVisiableVC
+                tempCurrentFloatVC = currentVisibleViewController
             }
         }
         return true
     }
 }
 
-extension FloatViewManager{
+extension FloatViewManager {
     func startDisplayLink() {
         displayLink = CADisplayLink(target: self, selector: #selector(displayLinkLoop))
         displayLink?.add(to: RunLoop.current, forMode: RunLoopMode.commonModes)
     }
-    
+
     func stopDisplayLink() {
         displayLink?.invalidate()
         displayLink = nil
     }
-    
+
     @objc func displayLinkLoop() {
-        if edgeGesture?.state == UIGestureRecognizerState.changed{
-            guard let startP = edgeGesture?.location(in:kWindow) else {
+        if edgeGesture?.state == UIGestureRecognizerState.changed {
+            guard let startP = edgeGesture?.location(in: DSFloatChat.kWindow) else {
                 return
             }
-    
-            let orx : CGFloat =  max(screenWidth - startP.x, kBvfMinX)
-            let ory : CGFloat = max(screenHeight - startP.x, kBvMinY)
-            bFloatView.frame = CGRect(x: orx, y: ory, width: kBottomViewFloatWidth, height: kBottomViewFloatHeight)
-            
-            guard  let transfomBottomP = kWindow?.convert(startP, to: bFloatView) else{
+
+            let originX: CGFloat = max(DSFloatChat.screenWidth - startP.x, DSFloatChat.kBvfMinX)
+            let originY: CGFloat = max(DSFloatChat.screenHeight - startP.x, DSFloatChat.kBvMinY)
+
+            bFloatView.frame = CGRect(x: originX, y: originY, width: DSFloatChat.kBottomViewFloatWidth, height: DSFloatChat.kBottomViewFloatHeight)
+
+            guard  let transformBottomP = DSFloatChat.kWindow?.convert(startP, to: bFloatView) else {
                 return
             }
-            
-         //   print(transfomBottomP)
-            if transfomBottomP.x > 0 && transfomBottomP.y > 0{
-                let arcCenter = CGPoint(x: kBottomViewFloatWidth, y: kBottomViewFloatHeight)
-                let distance = pow((transfomBottomP.x - arcCenter.x),2) + pow((transfomBottomP.y - arcCenter.y),2)
-                let onArc = pow(arcCenter.x,2)
-                if distance <= onArc{
-                    if(!bFloatView.insideBottomSeleted){
-                        bFloatView.insideBottomSeleted = true
+
+            if transformBottomP.x > .zero && transformBottomP.y > .zero {
+                let arcCenter = CGPoint(x: DSFloatChat.kBottomViewFloatWidth, y: DSFloatChat.kBottomViewFloatHeight)
+                let distance = pow((transformBottomP.x - arcCenter.x), 2) + pow((transformBottomP.y - arcCenter.y), 2)
+                let onArc = pow(arcCenter.x, 2)
+                if distance <= onArc {
+                    if !bFloatView.insideBottomSelected {
+                        bFloatView.insideBottomSelected = true
                     }
-                }else{
-                    if(bFloatView.insideBottomSeleted){
-                        bFloatView.insideBottomSeleted = false
+                } else {
+                    if bFloatView.insideBottomSelected {
+                        bFloatView.insideBottomSelected = false
                     }
                 }
-            }else{
-                if(bFloatView.insideBottomSeleted){
-                    bFloatView.insideBottomSeleted = false
+            } else {
+                if bFloatView.insideBottomSelected {
+                    bFloatView.insideBottomSelected = false
                 }
             }
-        }else if(edgeGesture?.state == UIGestureRecognizerState.possible){
-            
-            if(bFloatView.insideBottomSeleted){
-                currentFloatVC = tempCurrentFloatVC
+        } else if edgeGesture?.state == UIGestureRecognizerState.possible {
+
+            if bFloatView.insideBottomSelected {
+                currentFloatViewController = tempCurrentFloatVC
                 tempCurrentFloatVC = nil
                 ballView.show = true
-                
-                if let newDetailVC = currentFloatVC as? NewDetailController{
+
+                if let newDetailVC = currentFloatViewController as? NewDetailController {
                     ballView.backgroundColor = newDetailVC.themeColor
                 }
             }
-            
-            UIView.animate(withDuration: animationConst().animationDuration, animations: { 
-                  self.bFloatView.frame = CGRect(x: screenWidth, y: screenHeight, width: kBottomViewFloatWidth, height:kBottomViewFloatHeight)
+
+            UIView.animate(withDuration: DSFloatChat.animationDuration, animations: {
+                self.bFloatView.frame = CGRect(x: DSFloatChat.screenWidth, y: DSFloatChat.screenHeight, width: DSFloatChat.kBottomViewFloatWidth, height: DSFloatChat.kBottomViewFloatHeight)
             }) { (_) in
-                
+
             }
             stopDisplayLink()
         }
     }
 }
 
-extension FloatViewManager : FloatViewDelegate{
+extension FloatViewManager: FloatViewDelegate {
     func floatViewBeginMove(floatView: FloatBallView, point: CGPoint) {
-        UIView.animate(withDuration: 0.2, animations: { 
-             self.ballRedCancelView.frame = CGRect(x:screenWidth - kBottomViewFloatWidth, y: screenHeight - kBottomViewFloatHeight , width: kBottomViewFloatWidth, height: kBottomViewFloatHeight)
+        UIView.animate(withDuration: 0.2, animations: {
+            self.ballRedCancelView.frame = CGRect(x: DSFloatChat.screenWidth - DSFloatChat.kBottomViewFloatWidth, y: DSFloatChat.screenHeight - DSFloatChat.kBottomViewFloatHeight, width: DSFloatChat.kBottomViewFloatWidth, height: DSFloatChat.kBottomViewFloatHeight)
         }) { (_) in
-            
+
         }
     }
-    
+
     func floatViewMoved(floatView: FloatBallView, point: CGPoint) {
-        
-            guard  let transfomBottomP = kWindow?.convert(ballView.center, to: ballRedCancelView) else{
-                return
-            }
-            print(transfomBottomP)
-            if transfomBottomP.x > 0 && transfomBottomP.y > 0{
-                let arcCenter = CGPoint(x: kBottomViewFloatWidth, y: kBottomViewFloatHeight)
-                let distance = pow((transfomBottomP.x - arcCenter.x),2) + pow((transfomBottomP.y - arcCenter.y),2)
-                let onArc = pow(arcCenter.x,2)
-                if distance <= onArc{
-                    if(!ballRedCancelView.insideBottomSeleted){
-                        ballRedCancelView.insideBottomSeleted = true
-                    }
-                }else{
-                    if(ballRedCancelView.insideBottomSeleted){
-                        ballRedCancelView.insideBottomSeleted = false
-                    }
+        guard  let transformBottomP = DSFloatChat.kWindow?.convert(ballView.center, to: ballRedCancelView) else {
+            return
+        }
+
+        if transformBottomP.x > .zero && transformBottomP.y > .zero {
+            let arcCenter = CGPoint(x: DSFloatChat.kBottomViewFloatWidth, y: DSFloatChat.kBottomViewFloatHeight)
+            let distance = pow((transformBottomP.x - arcCenter.x), 2) + pow((transformBottomP.y - arcCenter.y), 2)
+            let onArc = pow(arcCenter.x, 2)
+
+            if distance <= onArc {
+                if !ballRedCancelView.insideBottomSelected {
+                    ballRedCancelView.insideBottomSelected = true
                 }
-            }else{
-                if(ballRedCancelView.insideBottomSeleted){
-                    ballRedCancelView.insideBottomSeleted = false
+            } else {
+                if ballRedCancelView.insideBottomSelected {
+                    ballRedCancelView.insideBottomSelected = false
                 }
             }
+        } else {
+            if ballRedCancelView.insideBottomSelected {
+                ballRedCancelView.insideBottomSelected = false
+            }
+        }
     }
-    
+
     func floatViewCancelMove(floatView: FloatBallView) {
-        if(ballRedCancelView.insideBottomSeleted){
+        if ballRedCancelView.insideBottomSelected {
             ballView.show = false
-            currentFloatVC = nil
+            currentFloatViewController = nil
             tempCurrentFloatVC = nil
         }
-        
-        UIView.animate(withDuration: 0.35, animations: { 
-            self.ballRedCancelView.frame = CGRect(x:screenWidth, y: screenHeight , width: kBottomViewFloatWidth, height: kBottomViewFloatHeight)
+
+        UIView.animate(withDuration: DSFloatChat.animationCancelMoveDuration, animations: {
+            self.ballRedCancelView.frame = .init(
+                x: DSFloatChat.screenWidth,
+                y: DSFloatChat.screenHeight,
+                width: DSFloatChat.kBottomViewFloatWidth,
+                height: DSFloatChat.kBottomViewFloatHeight
+            )
         }) { (_) in
-            
+
         }
     }
 }
 
-extension FloatViewManager{
-    func addFloatVcsClass(vcs:[String]?){
-        guard  let vcs = vcs else {
+extension FloatViewManager {
+    func addFloatClass(in viewControllers: [String]?) {
+        guard let viewControllers = viewControllers else {
             return
         }
-        
-        guard  let vcname = vcs.first else{
+
+        guard let viewControllerName = viewControllers.first else {
             return
         }
-        
+
         floatVcClass.removeAll()
-        if !floatVcClass.contains(vcname) {
-            floatVcClass.append(vcname)
+        if !floatVcClass.contains(viewControllerName) {
+            floatVcClass.append(viewControllerName)
         }
     }
 }
-
