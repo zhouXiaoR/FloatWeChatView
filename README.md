@@ -1,8 +1,8 @@
 ### Key words
 Transition animation, gesture monitoring, core animation
 
-### running result
-![Operation effect](Floating window operation effect.gif)
+### Result
+![Operation effect](https://github.com/zhouXiaoR/FloatWeChatView/raw/master/浮窗运行效果.gif)
 
 ### Introduction
 ```swift
