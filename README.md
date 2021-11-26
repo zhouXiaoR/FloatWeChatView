@@ -1,43 +1,43 @@
-### 关键词
-转场动画，手势监听，核心动画
+### Key words
+Transition animation, gesture monitoring, core animation
 
-### 运行效果
-![运行效果](浮窗运行效果.gif)
+### running result
+![Operation effect](Floating window operation effect.gif)
 
-### 使用简介
-```
-// []中存放需要悬浮的类，vcname指类名
+### Introduction
+```swift
+// [] stores the classes that need to be suspended, vcname refers to the class name
 FloatViewManager.manager.addFloatVcsClass(vcs: [vcname])
 ```
-### 主要使用类目及功能
-整体涉及以下几个主要的类，并注明其功能点
-- `FloatViewManager`单例，用来管理悬浮窗信息以及在window上的视图。
-- `TransitionPush / TransitionPop`自定义导航转场动画
-- `FloatBallView`屏幕上圆形浮标，可拖动
-- `BottomFloatView`底部绘制黑色或者红色视图
+### Mainly used categories and functions
+As a whole, it involves the following main categories, and indicate their function points
+-`FloatViewManager` singleton, used to manage the floating window information and the view on the window.
+-`TransitionPush / TransitionPop` custom navigation transition animation
+-`FloatBallView` round buoy on the screen, draggable
+-Draw a black or red view at the bottom of `BottomFloatView`
 
-### 思路
-- 1. 首先初始化项目时，为了监听手势移动变化，自定义转场，手势代理交由FloatViewManager来管理。 
-```
+### Ideas
+- 1. When the project is first initialized, in order to monitor the gesture movement changes, customize the transition, the gesture proxy is managed by FloatViewManager.
+```swift
 currentNavtigationController()?.interactivePopGestureRecognizer?.delegate = self
         currentNavtigationController()?.delegate = self
 ```
-- 2. 当进入可支持悬浮的控制器时，需要根据手势的偏移来计算底部黑色半透明框的移动，这里我们使用以下来做监听，注意这里一定要进行安全判断。
+- 2. When entering a controller that supports hovering, you need to calculate the movement of the black translucent frame at the bottom according to the offset of the gesture. Here we use the following to do monitoring. Note that safety judgments must be made here.
 
-```
+```swift
 func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-// 当前导航控制器是否存在子集合
-        guard  let vcs = currentNavtigationController()?.viewControllers else{
+// Whether there is a sub-collection in the current navigation controller
+        guard let vcs = currentNavtigationController()?.viewControllers else{
             return false
         }
         
-// 如果是根控制器，不做处理
-        guard vcs.count > 1 else {
+// If it is the root controller, no processing
+        guard vcs.count> 1 else {
             return false
         }
         
-// 判断当前的控制器与开始数组中的支持悬浮的控制器是否一致，只有一致才执行下一步，并开启监听
-        if  let currentVisiableVC = currentViewController() {
+// Determine whether the current controller is consistent with the controller that supports floating in the starting array. Only if they are consistent, perform the next step and turn on monitoring
+        if let currentVisiableVC = currentViewController() {
              let currentVCClassName = "\(currentVisiableVC.self)"
              if currentVCClassName.contains(floatVcClass.first!){
                 startDisplayLink()
@@ -50,29 +50,29 @@ func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> B
 }
 ```
 
-- 3. 根据监听的结果更新底部的半透明视图，这里详细代码请参见源代码。
-- 4. 在手势结束完之后，判断是否悬浮，若最终结束手势在底部黑色透明内，悬浮并展示圆形浮标，反之隐藏。
+- 3. Update the semi-transparent view at the bottom according to the monitoring results. Please refer to the source code for the detailed code here.
+- 4. After the gesture is finished, judge whether to hover or not. If the final end gesture is in the black transparent bottom, hover and display the round buoy, otherwise hide it.
 
-```
+```swift
 @objc func displayLinkLoop() {
         if edgeGesture?.state == UIGestureRecognizerState.changed{
             guard let startP = edgeGesture?.location(in:kWindow) else {
                 return
             }
     
-            let orx : CGFloat =  max(screenWidth - startP.x, kBvfMinX)
-            let ory : CGFloat = max(screenHeight - startP.x, kBvMinY)
+            let orx: CGFloat = max(screenWidth-startP.x, kBvfMinX)
+            let ory: CGFloat = max(screenHeight-startP.x, kBvMinY)
             bFloatView.frame = CGRect(x: orx, y: ory, width: kBottomViewFloatWidth, height: kBottomViewFloatHeight)
 
-            // 将点转化到底部视图上，计算是否在黑色圆内
-            guard  let transfomBottomP = kWindow?.convert(startP, to: bFloatView) else{
+            // Convert the point to the bottom view and calculate whether it is within the black circle
+            guard let transfomBottomP = kWindow?.convert(startP, to: bFloatView) else{
                 return
             }
             
-         //   print(transfomBottomP)
-            if transfomBottomP.x > 0 && transfomBottomP.y > 0{
+         // print(transfomBottomP)
+            if transfomBottomP.x> 0 && transfomBottomP.y> 0{
                 let arcCenter = CGPoint(x: kBottomViewFloatWidth, y: kBottomViewFloatHeight)
-                let distance = pow((transfomBottomP.x - arcCenter.x),2) + pow((transfomBottomP.y - arcCenter.y),2)
+                let distance = pow((transfomBottomP.x-arcCenter.x),2) + pow((transfomBottomP.y-arcCenter.y),2)
                 let onArc = pow(arcCenter.x,2)
                 if distance <= onArc{
                     if(!bFloatView.insideBottomSeleted){
@@ -90,7 +90,7 @@ func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> B
             }
         }else if(edgeGesture?.state == UIGestureRecognizerState.possible){
             
-//结束的时候判断最终手指的位置即黑色透明视图是否是选中状态。若选中，存储当前控制器，并暂停掉定时器（这里一定要暂停，不然浪费资源）
+//At the end, judge whether the final finger position, that is, the black transparent view is selected. If selected, save the current controller and pause the timer (must be paused here, otherwise resources will be wasted)
             if(bFloatView.insideBottomSeleted){
                 currentFloatVC = tempCurrentFloatVC
                 tempCurrentFloatVC = nil
@@ -100,31 +100,31 @@ func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> B
                     ballView.backgroundColor = newDetailVC.themeColor
                 }
             }
-            // 隐藏底部黑色透明视图
-            UIView.animate(withDuration: animationConst().animationDuration, animations: { 
+            // hide the black transparent view at the bottom
+            UIView.animate(withDuration: animationConst().animationDuration, animations: {
                   self.bFloatView.frame = CGRect(x: screenWidth, y: screenHeight, width: kBottomViewFloatWidth, height:kBottomViewFloatHeight)
-            }) { (_) in
+            }) {(_) in
                 
             }
             stopDisplayLink()
         }
     }
 ```
-- 5. 圆形浮标支持拖动，并且提供点击，拖动手势代理方法供FloatViewManager使用更新相关视图，参见源代码
-- 6. 当用户返回到其它界面，只要保证能找到最顶部导航，就可以再次打开悬浮窗控制器。这里主要是自定义转场动画push/pop。
-- 7. 当用户手指手动悬浮窗取消悬浮时，将单例中保存所有的数据清空，保证再次可以正常使用。
+- 5. The circular buoy supports dragging, and provides click and drag gesture proxy methods for FloatViewManager to use to update related views, see the source code
+- 6. When the user returns to other interfaces, he can open the floating window controller again as long as he can find the top navigation. Here is mainly a custom transition animation push/pop.
+- 7. When the user's finger manually cancels the floating window, all the data saved in the singleton will be cleared to ensure that it can be used normally again.
 
-### 源码
-[Git源码](https://github.com/zhouXiaoR/FloatWeChatView)
+### Source code
+[Git source code](https://github.com/zhouXiaoR/FloatWeChatView)
 
-### 简书联系
-[意见建议](https://www.jianshu.com/p/60494fd3935d)
+### Brief Book Contact
+[Comments and Suggestions](https://www.jianshu.com/p/60494fd3935d)
 
 
-### 感谢作者及其以下博客，如有问题欢迎私信批评指正
+### Thanks to the author and the following blogs, if you have any questions, please private message to criticize and correct
 
 [Customizing the Transition Animations](https://developer.apple.com/library/archive/featuredarticles/ViewControllerPGforiPhoneOS/CustomizingtheTransitionAnimations.html)
 
-[UINavigationController内的转场动画](https://www.jianshu.com/p/75216054469c)
+[Transition animation in UINavigationController](https://www.jianshu.com/p/75216054469c)
 
-[iOS浮窗](https://mp.weixin.qq.com/s/2jpkQVT9hE6QcADQYcHeKA)
+[iOS floating window](https://mp.weixin.qq.com/s/2jpkQVT9hE6QcADQYcHeKA)
