@@ -60,18 +60,18 @@ final class FloatViewManager: NSObject {
 }
 
 extension FloatViewManager: UINavigationControllerDelegate {
-    func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: UINavigationControllerOperation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: UINavigationController.Operation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         guard let currentViewController = currentFloatViewController else {
             return nil
         }
 
         // Animate only for effect VCs, ignore other VCs
-        if operation == UINavigationControllerOperation.push {
+        if operation == UINavigationController.Operation.push {
             if toVC != currentViewController {
                 return nil
             }
             return TransitionPush()
-        } else if operation == UINavigationControllerOperation.pop {
+        } else if operation == UINavigationController.Operation.pop {
             if fromVC != currentViewController {
                 return nil
             }
@@ -107,7 +107,7 @@ extension FloatViewManager: UIGestureRecognizerDelegate {
 extension FloatViewManager {
     func startDisplayLink() {
         displayLink = CADisplayLink(target: self, selector: #selector(displayLinkLoop))
-        displayLink?.add(to: RunLoop.current, forMode: RunLoopMode.commonModes)
+        displayLink?.add(to: RunLoop.current, forMode: RunLoop.Mode.common)
     }
 
     func stopDisplayLink() {
@@ -116,7 +116,7 @@ extension FloatViewManager {
     }
 
     @objc func displayLinkLoop() {
-        if edgeGesture?.state == UIGestureRecognizerState.changed {
+        if edgeGesture?.state == UIGestureRecognizer.State.changed {
             guard let startP = edgeGesture?.location(in: DSFloatChat.kWindow) else {
                 return
             }
@@ -148,7 +148,7 @@ extension FloatViewManager {
                     bFloatView.insideBottomSelected = false
                 }
             }
-        } else if edgeGesture?.state == UIGestureRecognizerState.possible {
+        } else if edgeGesture?.state == UIGestureRecognizer.State.possible {
 
             if bFloatView.insideBottomSelected {
                 currentFloatViewController = tempCurrentFloatVC

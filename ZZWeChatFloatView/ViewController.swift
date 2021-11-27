@@ -9,7 +9,7 @@
 import UIKit
 
 class ViewController: UIViewController {
-    lazy var tableView = UITableView(frame: view.bounds, style: UITableViewStyle.plain)
+    lazy var tableView = UITableView(frame: view.bounds, style: UITableView.Style.plain)
     let newsArray = ["Technology", "Interesting life", "Entertainment", "Music"]
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,7 +32,7 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
         let identifier = "identifier"
         var cell = tableView.dequeueReusableCell(withIdentifier: identifier)
         if cell == nil {
-            cell = UITableViewCell(style: UITableViewCellStyle.default, reuseIdentifier: identifier)
+            cell = UITableViewCell(style: UITableViewCell.CellStyle.default, reuseIdentifier: identifier)
         }
         cell?.textLabel?.text = newsArray[indexPath.row]
         return cell!

@@ -41,7 +41,7 @@ final class TransitionPop: NSObject, UIViewControllerAnimatedTransitioning {
         basicAnimation.toValue = endAnimationPath.cgPath
         basicAnimation.delegate = self
         basicAnimation.duration = DSFloatChat.animationDuration
-        basicAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionLinear)
+        basicAnimation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.linear)
         maskLayer.add(basicAnimation, forKey: "pathAnimation")
     }
 }

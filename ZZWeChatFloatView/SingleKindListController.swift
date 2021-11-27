@@ -10,7 +10,7 @@ import UIKit
 
 class SingleKindListController: UIViewController {
      lazy var singleNews: [String] = [String]()
-     lazy var tableView = UITableView(frame: view.bounds, style: UITableViewStyle.plain)
+     lazy var tableView = UITableView(frame: view.bounds, style: UITableView.Style.plain)
     override func viewDidLoad() {
         super.viewDidLoad()
         setUp()
@@ -38,7 +38,7 @@ extension SingleKindListController: UITableViewDelegate, UITableViewDataSource {
         let identifier = "identifier"
         var cell = tableView.dequeueReusableCell(withIdentifier: identifier)
         if cell == nil {
-            cell = UITableViewCell(style: UITableViewCellStyle.default, reuseIdentifier: identifier)
+            cell = UITableViewCell(style: UITableViewCell.CellStyle.default, reuseIdentifier: identifier)
         }
         cell?.textLabel?.text = singleNews[indexPath.row]
         return cell!
